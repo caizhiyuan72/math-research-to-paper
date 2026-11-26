@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check research claim ledger shape and local evidence paths, not mathematical truth."""
 import argparse
+from graphlib import CycleError, TopologicalSorter
 import json
 from pathlib import Path
 import sys
@@ -8,6 +9,55 @@ import sys
 STATUSES = {'conjecture', 'finite-evidence', 'derived-unchecked', 'proved',
             'computer-assisted', 'refuted'}
 NOVELTY = {'unknown', 'known', 'consequence', 'candidate-new'}
+FINAL_STATUSES = ('proved', 'computer-assisted')
+
+
+def _dependency_errors(claims):
+    """Return errors for dependency cycles and unsupported proof dependencies."""
+    errors = []
+    claims_by_id = {claim['id']: claim for claim in claims}
+    graph = {cid: claim.get('dependencies', []) for cid, claim in claims_by_id.items()}
+    for cid, claim in claims_by_id.items():
+        if claim['status'] in FINAL_STATUSES:
+            for dep in graph[cid]:
+                dependency_status = claims_by_id[dep]['status']
+                if dependency_status not in FINAL_STATUSES:
+                    errors.append(
+                        f'{cid}: {claim["status"]} claim depends on '
+                        f'{dep} with non-final status {dependency_status!r}.'
+                    )
+    try:
+        TopologicalSorter(graph).prepare()
+    except CycleError as exc:
+        errors.append('Dependency cycle detected among: ' + ', '.join(exc.args[1]) + '.')
+    return errors
+
+
+def check_core(data, core_ids):
+    """Check that the paper's core claims are present and fully established.
+
+    This function is intentionally separate from ``check`` so a ledger can be
+    structurally valid while a draft is still blocked from being written.
+    Callers should run it after ``check`` succeeds.
+    """
+    if not isinstance(core_ids, list) or not core_ids:
+        return ['core_claims: expected a nonempty list of unique claim IDs.']
+    if any(not isinstance(cid, str) or not cid.strip() for cid in core_ids):
+        return ['core_claims: every core claim ID must be a nonempty string.']
+    if len(set(core_ids)) != len(core_ids):
+        return ['core_claims: duplicate core claim ID.']
+    claims_by_id = {claim['id']: claim for claim in data['claims']}
+    errors = []
+    for cid in core_ids:
+        claim = claims_by_id.get(cid)
+        if claim is None:
+            errors.append(f'core_claims: unknown core claim ID {cid}.')
+        elif claim.get('status') not in FINAL_STATUSES:
+            errors.append(
+                f'core_claims: {cid} has status {claim.get("status")!r}; '
+                'core claims require proved or computer-assisted status.'
+            )
+    return errors
 
 def check(data, root):
     errors = []
@@ -60,6 +110,8 @@ def check(data, root):
             for dep in claim['dependencies']:
                 if not isinstance(dep, str) or dep not in ids:
                     errors.append(f'{claim.get("id", "?")}: unknown internal dependency {dep}')
+    if not errors:
+        errors.extend(_dependency_errors(data['claims']))
     return errors
 
 def main():

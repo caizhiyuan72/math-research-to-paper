@@ -1,0 +1,30 @@
+{
+  "scope": "",
+  "topic_status": "exploring",
+  "topic_checks": {
+    "gap": {"result": "pending", "evidence": ""},
+    "value": {"result": "pending", "evidence": ""},
+    "tractability": {"result": "pending", "evidence": ""}
+  },
+  "core_claims": [],
+  "draft_checks": {
+    "contribution": {"result": "pending", "evidence": ""},
+    "proof": {"result": "pending", "evidence": ""},
+    "stress_test": {"result": "pending", "evidence": ""},
+    "literature": {"result": "pending", "evidence": ""}
+  },
+  "audit_files": [],
+  "findings": [],
+  "review": {
+    "initial": "",
+    "mode": "",
+    "verifier": "",
+    "snapshot": "",
+    "tracks": {
+      "proof": {"result": "pending", "evidence": ""},
+      "computation": {"result": "pending", "evidence": ""},
+      "literature": {"result": "pending", "evidence": ""},
+      "manuscript": {"result": "pending", "evidence": ""}
+    }
+  }
+}
