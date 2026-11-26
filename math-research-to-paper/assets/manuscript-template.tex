@@ -1,0 +1,40 @@
+% Chinese draft: compile with XeLaTeX (requires ctex and appropriate CJK fonts).
+% For English-only submissions use amsart or the journal's official class.
+\documentclass[UTF8,11pt,a4paper]{ctexart}
+\usepackage{amsmath,amssymb,amsthm,geometry,booktabs,graphicx}
+\usepackage[hidelinks]{hyperref}
+\geometry{margin=2.7cm}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{corollary}[theorem]{推论}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{example}[theorem]{例}
+\newtheorem{conjecture}[theorem]{猜想}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注}
+\numberwithin{equation}{section}
+\title{研究题目}
+\author{} % Fill only with author-confirmed information.
+\date{}
+\begin{document}
+\maketitle
+\begin{abstract}
+% State the problem, approach, proved results, and limitations.
+\end{abstract}
+% Add verified keywords and MSC classification when available.
+\section{引言}
+% Literature, gap, exact contributions, main theorem and roadmap.
+\section{预备知识}
+% Definitions, notation, scope, cited lemmas.
+\section{主要结果及证明}
+% Split the proof into checkable lemmas; use labels and references.
+\section{推论与应用}
+\section{讨论与开放问题}
+% Data/code availability and AI disclosure as appropriate.
+% Insert a bibliography with verified entries only.
+\appendix
+\section{计算证书与复现说明}
+% Include completeness arguments, commands and actual results when relevant.
+\end{document}
